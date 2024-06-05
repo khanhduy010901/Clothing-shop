@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useEffect} from 'react';
 
-export default function App() {
+import {Provider} from 'react-redux';
+import configureStore from './src/stores/configurations/configureStore';
+import {PersistGate} from 'redux-persist/integration/react';
+import {MainApp} from './src/navigation/MainApp';
+import {setJSExceptionHandler} from 'react-native-exception-handler';
+import {LoadingProvider} from './src/helpers/loadingHelper';
+import {Alert} from 'react-native';
+
+const errorHandler = (e: Error, isFatal: boolean) => {
+  if (isFatal) {
+    Alert.alert(
+      'Error',
+      'There is a problem with Natcash app, please contact us for more information',
+      [{text: 'Close'}],
+    );
+  } else {
+  }
+};
+
+setJSExceptionHandler(errorHandler, true);
+// configureStore().persistor.purge();
+//try git commit Locnm_mascom
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <Provider store={configureStore().store}>
+        <PersistGate loading={null} persistor={configureStore().persistor}>
+          <LoadingProvider>
+            <MainApp />
+          </LoadingProvider>
+        </PersistGate>
+      </Provider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
